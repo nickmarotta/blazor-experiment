@@ -1,0 +1,54 @@
+@using System;
+@using System.IO;
+@using System.Net;
+@using System.Text;
+@using System.Text.Json;
+
+@page "/counter"
+
+<h1>Counter</h1>
+
+<p>Current count: @currentCount</p>
+<p>THIS IS A TEST: @testString</p>
+<p>Sending back the database: @databaseAsString</p>
+
+<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+
+@code {
+
+    private int currentCount = 0;
+    private string  testString = "BITCH BITCH";
+
+    private string databaseAsString;
+
+    private void IncrementCount()
+    {
+        currentCount++;
+    }
+
+    private Task<string> ShowDatabase() {
+
+        //Wrap in an async thingy 
+        return Task<string>.Factory.StartNew( () => {
+            WebRequest request = WebRequest.Create("http://localhost:9001/readDatabase");
+            WebResponse response = request.GetResponse();
+            
+            Stream responseStream = response.GetResponseStream();  
+            StreamReader readerStream = new StreamReader(responseStream, System.Text.Encoding.GetEncoding("utf-8")); 
+            
+            string json = readerStream.ReadToEnd();
+            readerStream.Close(); 
+
+            var jo = JsonDocument.Parse(json);
+            Console.Write(jo);
+            return json;
+        });
+        
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        databaseAsString = await ShowDatabase();
+    }
+
+}
