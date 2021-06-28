@@ -29,6 +29,9 @@ namespace blazor_experiment
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddSingleton<WeatherForecastService>();
+            services.AddSingleton<MongoDbClient>();
+            services.AddSingleton<NickTestRestClient>();
+            services.AddSingleton<StudentDataAccessLayer>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

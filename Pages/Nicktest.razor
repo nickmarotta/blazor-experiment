@@ -1,0 +1,97 @@
+@using System;
+@using System.IO;
+@using System.Net;
+@using System.Text;
+@using System.Text.Json;
+
+@page "/nicktest"
+
+@using blazor_experiment.Data
+@inject NickTestRestClient NickRestClient
+@inject StudentDataAccessLayer StudentClient 
+
+<h1>Nick Test</h1>
+
+<p>Mock node server response as JSON: @mockNodeServerResponse</p>
+
+<p>The below table is coming from mongo:</p>
+@if (students == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>House</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var student in students)
+            {
+                <tr>
+                    <td>@student.FirstName</td>
+                    <td>@student.LastName</td>
+                    <td>@student.House</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<p>
+    Below is an attempt at example search functionality: <br>
+    <input @bind="searchInput"/>
+</p> 
+<button class="btn btn-primary" @onclick="UpdateSearchResults">Search</button>
+@if (studentsFromSearch == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>House</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var student in studentsFromSearch)
+            {
+                <tr>
+                    <td>@student.FirstName</td>
+                    <td>@student.LastName</td>
+                    <td>@student.House</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+
+@code {
+    private string searchInput;
+
+    private string mockNodeServerResponse;
+    private List<Student> students;
+
+    private List<Student> studentsFromSearch;
+
+    protected override async Task OnInitializedAsync()
+    {
+        mockNodeServerResponse = await NickRestClient.MakeWebRequestToMockNodeServer();
+        students = StudentClient.GetAllStudents();
+    }
+
+    protected void UpdateSearchResults()
+    {
+        Console.Write("Ui searchINput is: " + searchInput);
+        studentsFromSearch = StudentClient.SearchStudents(searchInput);
+    }
+}

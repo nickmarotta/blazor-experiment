@@ -30,7 +30,7 @@
 
         //Wrap in an async thingy 
         return Task<string>.Factory.StartNew( () => {
-            WebRequest request = WebRequest.Create("http://localhost:9001/readDatabase");
+            WebRequest request = WebRequest.Create("http://localhost:9002/readDatabase");
             WebResponse response = request.GetResponse();
             
             Stream responseStream = response.GetResponseStream();  
